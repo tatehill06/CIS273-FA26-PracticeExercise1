@@ -7,7 +7,8 @@ public class ArrayList : IList
 
     public ArrayList()
     {
-
+        array = new int[16];
+        length = 0;
     }
 
     /// <summary>
@@ -38,7 +39,13 @@ public class ArrayList : IList
     /// <param name="value">value to add to the list</param>
     public void Append(int value)
     {
+        array[length] = value;
+        length++;
 
+        if( length == array.Length)
+        {
+            Resize();
+        }
     }
 
     /// <summary>
@@ -48,7 +55,14 @@ public class ArrayList : IList
     /// <returns>true if value is in list; false otherwise</returns>
     public bool Contains(int value)
     {
-        return true;
+        for( int i = 0; i < length; i++)
+        {
+            if(array[i] == value)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     // TODO
@@ -59,7 +73,14 @@ public class ArrayList : IList
     /// <returns>Index of first element with value; -1 if element is not found</returns>
     public int FirstIndexOf(int value)
     {
-        throw new NotImplementedException();
+        for(int i=0; i < length; i++)
+        {
+            if(array[i] == value)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     // TODO
@@ -71,8 +92,23 @@ public class ArrayList : IList
     /// <param name="existingValue"></param>
     public void InsertAfter(int newValue, int existingValue)
     {
-        throw new NotImplementedException();
+        int index = FirstIndexOf(existingValue);
+
+        if (index == -1)
+        {
+            Append(newValue);
+            return;
+        }
+        if (length == array.Length)
+        {
+            Resize();
+        }
+        
+        ShiftRight(index + 1);
+        array[index + 1] = newValue;
+        length++;
     }
+    
 
     // TODO
     /// <summary>
@@ -82,7 +118,19 @@ public class ArrayList : IList
     /// <param name="index"></param>
     public void InsertAt(int value, int index)
     {
-        throw new NotImplementedException();
+        if (index < 0 || index > length)
+        {
+            throw new IndexOutOfRangeException();
+        }
+
+        if (length == array.Length)
+        {
+            Resize();
+        }
+        
+        ShiftRight(index);
+        array[index] = value;
+        length++;
     }
 
     /// <summary>
@@ -91,8 +139,13 @@ public class ArrayList : IList
     /// <param name="value"></param>
     public void Prepend(int value)
     {
-        throw new NotImplementedException();
-
+        if( length == array.Length)
+        {
+            Resize();
+        }
+        ShiftRight(0);
+        array[0] = value;
+        length++;
     }
 
     // TODO
@@ -102,7 +155,11 @@ public class ArrayList : IList
     /// <param name="value">value of item to be removed</param>
     public void Remove(int value)
     {
-
+        int index = FirstIndexOf(value);
+        if(index >= 0)
+        {
+            RemoveAt(index);
+        }
     }
 
     // TODO
@@ -113,7 +170,12 @@ public class ArrayList : IList
     /// <exception > Throws IndexOutOfRangeException </exception>
     public void RemoveAt(int index)
     {
-        throw new NotImplementedException();
+        if (index < 0 || index >= length)
+        {
+            throw new IndexOutOfRangeException();
+        }
+        ShiftLeft(index); 
+        length--;
     }
 
     public override string ToString()
@@ -142,9 +204,11 @@ public class ArrayList : IList
     /// <returns>The element at the given index; null if index is negative or not less than Length.</returns>
     public int? Get(int index)
     {
-
-
-        return null;
+        if (index < 0 || index >= length)
+        {
+            return null;
+        }
+        return array[index];
     }
 
     /// <summary>
@@ -152,7 +216,7 @@ public class ArrayList : IList
     /// </summary>
     public void Clear()
     {
-
+        length = 0;
     }
 
     /// <summary>
@@ -161,24 +225,35 @@ public class ArrayList : IList
     /// <returns></returns>
     public IList Reverse()
     {
-        throw new NotImplementedException();
+        ArrayList reversedArray = new ArrayList();
+
+        for(int i = length-1; i >= 0; i--)
+        {
+            reversedArray.Append(array[i]);
+        }
+        return reversedArray;
     }
 
     private void ShiftRight(int startingIndex)
     {
-
+        for(int i = length-1; i >= startingIndex; i--)
+        {
+            array[i+1] = array[i];
+        }
     }
 
     private void ShiftLeft(int startingIndex)
     {
-
+        for (int i = startingIndex; i < length - 1; i++)
+        {
+            array[i] = array[i+1];
+        }
     }
 
     private void Resize()
     {
         Array.Resize(ref array, 2 * array.Length);
     }
-
 }
 
 
